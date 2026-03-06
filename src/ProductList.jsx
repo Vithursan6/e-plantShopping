@@ -4,12 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import CartItem from './CartItem';
 import { addItem } from './CartSlice';
 
-function ProductList({ onHomeClick, plant }) {
+function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const cartItems = useSelector(state => state.cart.items);
     const dispatch = useDispatch();
-    //const isInCart = cartItems.some(item => item.id === plant.id);
+    const cartItems = useSelector(state => state.cart.cartItems);
+    
     
     
     const plantsArray = [
@@ -290,15 +290,17 @@ function ProductList({ onHomeClick, plant }) {
         setShowCart(false);
     };
 
-    const handleAddToCart = (plant) => {
-            //if (!isInCart){
+    const handleAddToCart = plant => {
+            
                 dispatch(addItem(plant));
-            //}
+                
+                //console.log('rendering plant id and name 2', plant.id, plant.name);
+            };
 
-            console.log('rendering plant id and name 2', plant.id, plant.name);
+           
     
         
-    };
+    
 
     
     return (
@@ -328,29 +330,34 @@ function ProductList({ onHomeClick, plant }) {
                     <h2 className='product-list'>{categoryObj.category}</h2>
                     <div style={{ display: 'flex', gap: '20px' }}>
                     {categoryObj.plant && categoryObj.plant.map(plant => {
-                        console.log('rendering plant id and name', plant.id, plant.name);
+                        //console.log('rendering plant id and name', plant.id, plant.name);
                                            
-                        return (
-                        <div key={plant.id} className="product-card">
-                            <img className='product-image' src={plant.image} alt={plant.name} />
-                            <h3 className='product-title'>{plant.name}</h3>
-                            <p>{plant.description}</p>
-                            <p className='product-price'><strong>Cost: </strong>{plant.cost}</p>
-                            <button className='product-button' onClick={() => handleAddToCart(plant)}> 
-                            Add to Cart
-                            </button>
-                        </div>
-                    );
-            })}
-    </div>
-  </div>
-))}
-                </div>
-            ) : (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                                            return (
+                                            <div key={plant.id} className="product-card">
+                                                <img className='product-image' src={plant.image} alt={plant.name} />
+                                                <h3 className='product-title'>{plant.name}</h3>
+                                                <p>{plant.description}</p>
+                                                <p className='product-price'><strong>Cost: </strong>{plant.cost}</p>
+                                                <button 
+                                                    className={`product-button ${cartItems.some(item => item.id === plant.id) ? 'disabled' : ''}`}
+                                                    onClick={() => handleAddToCart(plant)}
+                                                    disabled={cartItems.some(item => item.id === plant.id)}
+                                                >
+                                                    {cartItems.some(item => item.id === plant.id) ? 'Added' : 'Add to Cart'}
+                                                </button>
+                                            </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                    ) : (
+                    <CartItem onContinueShopping={handleContinueShopping} />
             )}
         </div>
     );
+
 }
 
 export default ProductList;
